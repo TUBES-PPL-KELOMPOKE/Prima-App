@@ -10,6 +10,7 @@ export const listDoctors = async (req, reply) => {
   }
 };
 
+//pencarian doctor
 export const getDoctorDetail = async (req, reply) => {
   try {
     const { id } = req.params;
