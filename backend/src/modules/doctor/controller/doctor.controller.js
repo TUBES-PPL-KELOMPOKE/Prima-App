@@ -9,6 +9,7 @@ export const listDoctors = async (req, reply) => {
     return reply.code(400).send({ success: false, message: error.message });
   }
 };
+
 //pencarian doctor
 export const getDoctorDetail = async (req, reply) => {
   try {
