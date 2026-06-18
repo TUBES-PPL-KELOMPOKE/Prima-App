@@ -46,9 +46,10 @@ export function Sidebar() {
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="p-5 border-b">
-        <h1 className="text-2xl font-bold text-blue-600 tracking-tight">PRIMA</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">Portal Pasien Kesehatan</p>
+      <div className="py-6 px-4 border-b">
+        <div className="flex justify-center">
+          <img src="/logoprim.png" alt="PRIMA Logo" className="h-20 w-auto object-contain drop-shadow-sm" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+        </div>
       </div>
 
       {/* User */}

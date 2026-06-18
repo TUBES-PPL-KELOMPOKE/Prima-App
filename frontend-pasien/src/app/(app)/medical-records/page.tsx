@@ -63,15 +63,15 @@ export default function MedicalRecordsPage() {
 
   return (
     <div className="pb-8 min-h-screen bg-gray-50/50 dark:bg-gray-950">
-      <div className="px-6 py-8 bg-gradient-to-br from-violet-600 to-blue-600 text-white rounded-b-3xl shadow-lg mb-6">
+      <div className="px-6 py-8 bg-gradient-to-br from-blue-600 to-blue-600 text-white rounded-b-3xl shadow-lg mb-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold mb-1">Rekam Medis</h1>
-            <p className="text-violet-100 text-sm">Riwayat kesehatan dan dokumen Anda</p>
+            <p className="text-blue-100 text-sm">Riwayat kesehatan dan dokumen Anda</p>
           </div>
           
           <Dialog>
-            <DialogTrigger render={<Button className="bg-white text-violet-600 hover:bg-violet-50 rounded-xl" />}>
+            <DialogTrigger render={<Button className="bg-white text-blue-600 hover:bg-blue-50 rounded-xl" />}>
               <Plus className="h-4 w-4 mr-2" />
               Upload
             </DialogTrigger>

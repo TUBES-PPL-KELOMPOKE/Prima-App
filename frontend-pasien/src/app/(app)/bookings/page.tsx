@@ -56,9 +56,9 @@ export default function BookingsPage() {
                     <Calendar className="h-5 w-5 text-blue-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold">Booking #{b.id?.slice(0, 8)}</p>
-                    <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-400">
-                      <span>{b.appointment_date}</span>
+                    <p className="text-sm font-semibold text-slate-800">{(b as any).doctor_nama || (b as any).doctor_name || (b as any).doctor?.name || `Booking #${b.id?.slice(0, 8)}`}</p>
+                    <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-500">
+                      <span>{b.appointment_date ? new Date(b.appointment_date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : ''}</span>
                       <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{b.start_time}–{b.end_time}</span>
                     </div>
                   </div>
