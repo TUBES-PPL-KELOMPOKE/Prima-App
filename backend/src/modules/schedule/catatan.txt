@@ -165,7 +165,3 @@ Method/Path:
 Query (Optional):
   - date (YYYY-MM-DD)
   - status (booked|cancelled|completed)
-
-
-
-ISI Janji temu juga

@@ -3,11 +3,14 @@ import { getEnv } from "./env.js";
 
 const databaseUrl = getEnv("DATABASE_URL");
 
-export const sql = databaseUrl
+export const neonSql = databaseUrl
   ? neon(databaseUrl)
-  : () => {
-      throw new Error("DATABASE_URL belum diset.");
-    };
+  : Object.assign(
+      () => { throw new Error("DATABASE_URL belum diset."); },
+      { query: () => { throw new Error("DATABASE_URL belum diset."); } }
+    );
+
+export const sql = neonSql;
 
 export async function initPgvector() {
   if (!databaseUrl) {
@@ -152,4 +155,88 @@ export async function initDatabase() {
   } catch (err) {
     console.warn("[initDatabase] Gagal migrasi appointments doctor/pasien id:", err.message);
   }
+
+  // Consultations
+  await sql`
+    CREATE TABLE IF NOT EXISTS public.consultations (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      pasien_id VARCHAR NOT NULL,
+      doctor_id VARCHAR NOT NULL,
+      booking_id UUID NULL,
+      status VARCHAR NOT NULL DEFAULT 'aktif',
+      topik TEXT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+      ended_at TIMESTAMPTZ NULL,
+      deleted_at TIMESTAMPTZ NULL
+    );
+  `;
+
+  // Messages
+  await sql`
+    CREATE TABLE IF NOT EXISTS public.messages (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      consultation_id UUID NOT NULL,
+      sender_id VARCHAR NOT NULL,
+      message TEXT NULL,
+      file_url TEXT NULL,
+      type VARCHAR NOT NULL DEFAULT 'text',
+      is_read BOOLEAN NOT NULL DEFAULT false,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+      deleted_at TIMESTAMPTZ NULL
+    );
+  `;
+
+  // Migration safety: ensure consultation_id exists in messages
+  try {
+    await sql.unsafe(`
+      ALTER TABLE public.messages ADD COLUMN IF NOT EXISTS consultation_id UUID;
+    `);
+  } catch (err) {
+    console.warn("[initDatabase] Gagal alter messages:", err.message);
+  }
+
+  // Medical Records
+  await sql`
+    CREATE TABLE IF NOT EXISTS public.medical_records (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      pasien_id VARCHAR NOT NULL,
+      doctor_id VARCHAR NULL,
+      booking_id UUID NULL,
+      type VARCHAR NOT NULL,
+      judul VARCHAR NOT NULL,
+      deskripsi TEXT NULL,
+      catatan_dokter TEXT NULL,
+      attachment_url TEXT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+      deleted_at TIMESTAMPTZ NULL
+    );
+  `;
+
+  // Drop the constraint that causes issues with dynamic types like "Upload User" or "Tindakan Medis"
+  try {
+    await sql.unsafe(`ALTER TABLE public.medical_records DROP CONSTRAINT IF EXISTS medical_records_type_check;`);
+  } catch (err) {
+    console.warn("[initDatabase] Gagal drop constraint medical_records_type_check:", err.message);
+  }
+  // Health Documents
+  await sql`
+    CREATE TABLE IF NOT EXISTS public.health_documents (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      pasien_id VARCHAR NOT NULL,
+      doctor_id VARCHAR NOT NULL,
+      type VARCHAR NOT NULL,
+      keperluan TEXT NULL,
+      catatan TEXT NULL,
+      catatan_dokter TEXT NULL,
+      status VARCHAR NOT NULL DEFAULT 'draft',
+      berlaku_dari DATE NULL,
+      berlaku_sampai DATE NULL,
+      verified_at TIMESTAMPTZ NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    );
+  `;
 }

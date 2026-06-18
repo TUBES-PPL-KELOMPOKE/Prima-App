@@ -45,4 +45,3 @@ Catatan:
   - Path di atas adalah route lokal module. Prefix akhir endpoint tergantung cara module
     diregister di app utama.
 
-Fitur ini untuk real time antrian

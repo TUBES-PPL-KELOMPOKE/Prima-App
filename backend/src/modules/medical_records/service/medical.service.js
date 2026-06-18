@@ -19,7 +19,7 @@ export async function createMedicalRecord(payload) {
     VALUES (
       ${id},
       ${payload.pasien_id},
-      ${payload.doctor_id},
+      ${payload.doctor_id || null},
       ${payload.booking_id || null},
       ${payload.type},
       ${payload.judul},
@@ -78,9 +78,57 @@ export async function getMedicalRecordsByPasien({
   values.push(limit);
   values.push(offset);
 
-  const result = await sql(query, values);
+  const result = await sql.query(query, values);
+  return result.rows || result;
+}
 
-  return result;
+export async function getMedicalRecordsByDoctor({
+  doctor_id,
+  type,
+  date_from,
+  date_to,
+  limit = 10,
+  offset = 0,
+}) {
+  let query = `
+    SELECT *
+    FROM medical_records
+    WHERE doctor_id = $1
+      AND deleted_at IS NULL
+  `;
+
+  const values = [doctor_id];
+  let index = 2;
+
+  if (type) {
+    query += ` AND type = $${index}`;
+    values.push(type);
+    index++;
+  }
+
+  if (date_from) {
+    query += ` AND created_at >= $${index}`;
+    values.push(date_from);
+    index++;
+  }
+
+  if (date_to) {
+    query += ` AND created_at <= $${index}`;
+    values.push(date_to);
+    index++;
+  }
+
+  query += `
+    ORDER BY created_at DESC
+    LIMIT $${index}
+    OFFSET $${index + 1}
+  `;
+
+  values.push(limit);
+  values.push(offset);
+
+  const result = await sql.query(query, values);
+  return result.rows || result;
 }
 
 export async function getMedicalRecordDetail(id) {
@@ -136,8 +184,8 @@ export async function updateMedicalRecord(id, payload) {
     RETURNING *
   `;
 
-  const result = await sql(query, values);
-  return result[0] || null;
+  const result = await sql.query(query, values);
+  return (result.rows ? result.rows[0] : result[0]) || null;
 }
 
 export async function deleteMedicalRecord(id) {
@@ -148,4 +196,4 @@ export async function deleteMedicalRecord(id) {
     RETURNING *
   `;
   return result[0] || null;
-}
+}

@@ -7,7 +7,8 @@ import {
     createItemsPrescriptionController,
     deleteItemsPrescriptionController,
     updateItemsPrescriptionController,
-    downloadPrescriptionPdfController
+    downloadPrescriptionPdfController,
+    getPrescriptionByPasienController
 } 
 from "../controller/prescription.controller.js";
 
@@ -20,6 +21,7 @@ export default async function prescriptionRoutes(app) {
     //get
     app.get('/show/:id', getPrescriptionByIdController);
     app.get('/show/all', getAllPrescriptionController);
+    app.get('/pasien/:pasien_id', getPrescriptionByPasienController);
     
     //put
     app.put('/update/:id', updatePrescriptionByIdController);

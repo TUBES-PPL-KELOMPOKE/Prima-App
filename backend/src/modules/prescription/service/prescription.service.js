@@ -109,6 +109,33 @@ export async function getAllPrescription() {
 
     return result;
 }
+
+export async function getPrescriptionByPasien(patientId) {
+    const prescriptions = await sql`
+        SELECT p.*, d.name as doctor_name
+        FROM prescriptions p
+        LEFT JOIN users d ON d.id = p.doctor_id
+        WHERE p.patient_id = ${patientId}
+        ORDER BY p.created_at DESC;
+    `;
+
+    const items = await sql`
+        SELECT * FROM prescription_items;
+    `;
+
+    const result = prescriptions.map((prescription) => {
+        const prescriptionItems = items.filter(
+            (item) => item.prescription_id === prescription.id
+        );
+
+        return {
+            ...prescription,
+            items: prescriptionItems,
+        };
+    });
+
+    return result;
+}
 //TODO: Create items prescription
 export async function createItemsPrescription(payload) {
     const id = crypto.randomUUID();

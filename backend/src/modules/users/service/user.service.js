@@ -1,5 +1,5 @@
 import { sql } from "../../../config/db.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 const PUBLIC_USER_COLUMNS = [
   "id",
@@ -120,6 +120,21 @@ export const getUserByIdService = async (id) => {
       LIMIT 1
     `,
     [id]
+  );
+
+  return rows[0] || null;
+};
+
+export const findUserByEmailService = async (email) => {
+  const rows = await sql.query(
+    `
+      SELECT id, name, email, password, role, status
+      FROM users
+      WHERE email = $1
+        AND deleted_at IS NULL
+      LIMIT 1
+    `,
+    [email]
   );
 
   return rows[0] || null;

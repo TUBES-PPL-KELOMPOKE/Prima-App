@@ -45,4 +45,3 @@ Catatan akses role
 - Project saat ini belum memasang auth middleware/role guard secara konsisten.
   Jadi aturan role masih bersifat aturan bisnis (belum enforce teknis).
 
-Fitur ini untuk notifikasi

@@ -1,15 +1,15 @@
 import { sql } from "../../../config/db.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { generateHexId } from "../../../utils/id.js";
 
 export const registerAdminService = async ({
   name,
   email,
   password,
-  jenis_kelamin,
-  no_telepon,
-  kota,
-  provinsi,
+  jenis_kelamin = null,
+  no_telepon = null,
+  kota = null,
+  provinsi = null,
 }) => {
 
   const emailCheck = await sql`

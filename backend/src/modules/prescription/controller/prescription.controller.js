@@ -3,6 +3,7 @@ import {
     updatePrescription,
     deletePrescription,
     getAllPrescription,
+    getPrescriptionByPasien,
     createItemsPrescription,
     updateItemsPrescription,
     deleteItemsPrescription
@@ -89,6 +90,23 @@ export async function getAllPrescriptionController(req,reply) {
         });
     }
 }
+
+export async function getPrescriptionByPasienController(req, reply) {
+    try {
+        const prescription = await getPrescriptionByPasien(req.params.pasien_id);
+        return reply.code(200).send({
+            success: true,
+            message: "Resep berhasil diambil",
+            data: prescription,
+        });
+    } catch (error) {
+        return reply.code(500).send({
+            success: false,
+            message: error.message,
+        });
+    }
+}
+
 //TODO: Create items prescription
 export async function createItemsPrescriptionController(req, reply) {
     try {
@@ -149,16 +167,16 @@ export async function downloadPrescriptionPdfController(req, reply) {
             });
         }
 
-        const pdfBuffer = await generatePrescriptionPdf(prescription);
+        const htmlString = await generatePrescriptionPdf(prescription);
 
         reply
-            .header("Content-Type", "application/pdf")
+            .header("Content-Type", "text/html")
             .header(
                 "Content-Disposition",
-                `attachment; filename=prescription-${prescription.id}.pdf`
+                `inline; filename=prescription-${prescription.id}.html`
             );
 
-        return reply.send(pdfBuffer);
+        return reply.send(htmlString);
 
     } catch (error) {
         return reply.code(500).send({
