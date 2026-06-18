@@ -1,0 +1,48 @@
+CATATAN - MODULE DOCUMENT
+
+Tujuan (untuk Front End)
+- Module ini dipakai untuk fitur dokumen kesehatan:
+  - CRUD data dokumen (health_documents),
+  - download PDF untuk dokumen SK (Surat Keterangan Sehat), SR (Surat Rujukan), SS (Surat Sakit).
+
+Base URL:
+  /document
+
+Daftar endpoint & fungsi
+1) POST /document/create
+   - Fitur: buat dokumen kesehatan (record di database)
+
+2) GET /document/show
+   - Fitur: list semua dokumen kesehatan
+
+3) GET /document/show/:id
+   - Fitur: detail dokumen kesehatan
+
+4) PUT /document/update/:id
+   - Fitur: update data dokumen
+
+5) DELETE /document/delete/:id
+   - Fitur: hapus dokumen
+
+6) GET /document/download/sk/:id
+   - Fitur: download PDF template SK
+
+7) GET /document/download/sr/:id
+   - Fitur: download PDF template SR
+
+8) GET /document/download/ss/:id
+   - Fitur: download PDF template SS
+
+Catatan response download
+- Endpoint download mengembalikan file PDF (Content-Type: application/pdf).
+
+Catatan implementasi (untuk FE)
+- Buat alur upload/preview di FE berdasarkan data yang disimpan di tabel (bukan upload file).
+- Untuk tampilan PDF, FE bisa:
+  - membuka URL download di tab baru, atau
+  - download sebagai file (bergantung kebutuhan UX).
+
+Catatan teknis (opsional)
+- PDF digenerate dari template Handlebars dan dirender memakai Puppeteer.
+- Pastikan schema DB mengikuti field yang dipakai service (lihat `src/modules/document/db.txt`).
+

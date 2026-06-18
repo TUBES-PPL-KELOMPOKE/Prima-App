@@ -1,0 +1,60 @@
+============================================================
+DAFTAR FITUR - USERS MODULE
+Base URL:
+  /auth
+============================================================
+
+Catatan umum:
+  - Semua endpoint di bawah saat ini belum memakai auth middleware (sementara).
+  - "Soft delete" = mengisi kolom `deleted_at` (data tidak hilang permanen).
+
+1) Login User
+  - Akses: POST /auth/login
+  - Tujuan: Login untuk semua role (Admin, Dokter, Pasien) dan mendapatkan token JWT.
+
+2) Logout User
+  - Akses: POST /auth/logout
+  - Tujuan: Logout user dan menghapus sesi (jika ada).
+
+3) Registrasi User (Admin)
+  - Akses: POST /auth/register/admin
+  - Tujuan: membuat akun admin
+
+4) Registrasi User (Dokter)
+  - Akses: POST /auth/register/doctor
+  - Tujuan: membuat akun dokter
+
+5) Registrasi User (Pasien)
+  - Akses: POST /auth/register/pasien
+  - Tujuan: membuat akun pasien
+
+6) List Users (filter & pagination)
+  - Akses: GET /auth/users
+  - Query: limit, offset, role, status
+
+7) Get Profil User (by ID)
+  - Akses: GET /auth/users/:id
+  - Catatan: response tidak mengembalikan kolom `password`
+
+8) Update User (umum)
+  - Akses: PATCH /auth/users/:id
+  - Tujuan: update field user (jika kirim `password` akan di-hash ulang)
+
+9) Update Profil Pasien (whitelist, role=pasien)
+  - Akses: PATCH /auth/users/:id/pasien
+  - Tujuan: update profil pasien (field profil pasien saja)
+
+10) Update Profil Dokter (whitelist, role=doctor)
+  - Akses: PATCH /auth/users/:id/doctor
+  - Tujuan: update profil dokter (field profil dokter saja)
+
+11) Upload Foto Profil
+  - Akses: POST /auth/users/:id/photo
+  - Body: multipart/form-data (key: file)
+  - Hasil: update `foto_profil_url` user
+
+12) Hapus Akun (Soft Delete)
+  - Akses: DELETE /auth/users/:id
+
+13) Hapus Akun (Hard Delete / Permanent)
+  - Akses: DELETE /auth/users/:id/permanent

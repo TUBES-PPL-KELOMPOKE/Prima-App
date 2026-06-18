@@ -1,0 +1,33 @@
+CATATAN - MODULE IMMUNIZATION
+
+Tujuan (untuk Front End)
+- Module ini dipakai untuk fitur data imunisasi pasien (CRUD imunisasi).
+
+Base URL:
+  /immunization
+
+Daftar endpoint & fungsi
+1) POST /immunization/create
+   - Fitur: tambah data imunisasi pasien
+
+2) GET /immunization/show
+   - Fitur: list semua data imunisasi
+
+3) GET /immunization/show/:id
+   - Fitur: detail data imunisasi by id
+
+4) PUT /immunization/update/:id
+   - Fitur: update data imunisasi
+
+5) DELETE /immunization/delete/:id
+   - Fitur: hapus data imunisasi (hard delete)
+
+Field utama (dipakai create/update)
+- pasien_id, doctor_id
+- nama_vaksin, jenis_vaksin, dosis_ke
+- tanggal_vaksin, lokasi, catatan, tanggal_berikutnya
+
+Catatan penting
+- Module ini saat ini belum pakai soft delete (DELETE menghapus row).
+- Belum ada auth middleware yang enforce role; aturan role masih business rule.
+
