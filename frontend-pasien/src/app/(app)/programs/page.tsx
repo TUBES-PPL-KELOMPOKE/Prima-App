@@ -15,6 +15,19 @@ const typeColor: Record<string, string> = {
   olahraga:    'bg-pink-50 text-pink-600',
 }
 
+const formatDate = (dateString?: string) => {
+  if (!dateString) return '';
+  try {
+    return new Date(dateString).toLocaleDateString('id-ID', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  } catch (e) {
+    return dateString;
+  }
+};
+
 export default function ProgramsPage() {
   const { data, isLoading } = useQuery({
     queryKey: ['programs'],
@@ -42,7 +55,7 @@ export default function ProgramsPage() {
                   </div>
                   <div className="flex items-center gap-2 text-xs text-gray-400 mt-auto pt-3 border-t border-gray-50 dark:border-gray-800">
                     <CalendarDays className="h-4 w-4" />
-                    <span className="font-medium text-gray-500">{p.tanggal_mulai}</span>
+                    <span className="font-medium text-gray-500">{formatDate(p.tanggal_mulai)}</span>
                     <ChevronRight className="h-4 w-4 ml-auto text-gray-300" />
                   </div>
                 </div>

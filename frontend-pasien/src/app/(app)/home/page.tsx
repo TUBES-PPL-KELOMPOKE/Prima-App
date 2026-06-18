@@ -9,7 +9,7 @@ import { doctorService, scheduleService, consultationService } from '@/services/
 import { programService } from '@/services/index'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   Stethoscope, Calendar, MessageSquare, FileText, Pill,
@@ -45,23 +45,27 @@ export default function HomePage() {
   const { data: doctorsData } = useQuery({
     queryKey: ['doctors-home'],
     queryFn: () => doctorService.list({ limit: 8 }),
+    retry: false,
   })
 
   const { data: bookingsData } = useQuery({
     queryKey: ['bookings-home', user?.id],
     queryFn: () => scheduleService.listByUser(user!.id, { limit: 3 }),
     enabled: !!user?.id,
+    retry: false,
   })
 
   const { data: consultData } = useQuery({
     queryKey: ['consultations-home', user?.id],
     queryFn: () => consultationService.listByPasien(user!.id, { status: 'aktif', limit: 3 }),
     enabled: !!user?.id,
+    retry: false,
   })
 
   const { data: programsData } = useQuery({
     queryKey: ['programs-home'],
     queryFn: () => programService.list({ status: 'aktif', limit: 4 }),
+    retry: false,
   })
 
   const doctors: Doctor[]           = doctorsData?.data || []
@@ -114,11 +118,11 @@ export default function HomePage() {
                 <span className="text-blue-600">semua dalam satu aplikasi.</span>
               </p>
               <div className="flex gap-3 mt-5">
-                <Link href="/doctors">
-                  <Button className="rounded-full px-5">Cari Dokter</Button>
+                <Link href="/doctors" className={cn(buttonVariants({ variant: 'default' }), "rounded-full px-5")}>
+                  Cari Dokter
                 </Link>
-                <Link href="/consultations">
-                  <Button variant="outline" className="rounded-full px-5">Konsultasi</Button>
+                <Link href="/consultations" className={cn(buttonVariants({ variant: 'outline' }), "rounded-full px-5")}>
+                  Konsultasi
                 </Link>
               </div>
             </div>
@@ -143,10 +147,8 @@ export default function HomePage() {
                 Ceritakan keluhan Anda dan biarkan AI PRIMA menganalisis gejala dan merekomendasikan dokter yang tepat.
               </p>
             </div>
-            <Link href="/ai-health" className="mt-4 inline-block">
-              <Button className="bg-white text-blue-600 hover:bg-blue-50 rounded-full px-5 font-semibold">
-                Analisis Sekarang
-              </Button>
+            <Link href="/ai-health" className={cn(buttonVariants({ variant: 'default' }), "mt-4 bg-white text-blue-600 hover:bg-blue-50 rounded-full px-5 font-semibold w-max")}>
+              Analisis Sekarang
             </Link>
           </div>
         </div>
