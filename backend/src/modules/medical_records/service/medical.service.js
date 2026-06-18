@@ -196,4 +196,4 @@ export async function deleteMedicalRecord(id) {
     RETURNING *
   `;
   return result[0] || null;
-}
+}

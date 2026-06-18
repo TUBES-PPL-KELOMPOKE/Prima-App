@@ -52,9 +52,14 @@ export const symptomsAnalysisService = async ({ user_id, gejala, durasi, suhu_tu
   };
 
   const analysis = await callMaiaJson({
-    task: "Analisis Gejala (FOKUS HANYA PADA PENYAKIT SAJA. Berikan penjelasan diagnosis dan tindakan.)",
+    task: "Analisis Gejala",
     schema_hint: {
-      response_text: "string (Format satu paragraf sederhana saja, tanpa markdown, tanpa list. Sebutkan kemungkinan penyakit, tindakan, dan saran ke dokter jika perlu.)"
+      possible_conditions: [{ name: "string", likelihood: "Rendah|Sedang|Tinggi" }],
+      what_you_can_do_now: ["string"],
+      when_to_see_doctor: ["string"],
+      recommended_specialist: { spesialisasi: "string", alasan: "string" },
+      health_insight: { title: "string", description: "string" },
+      disclaimer: "string",
     },
     user_payload: aiInput,
     disclaimer: DISCLAIMER,
@@ -62,7 +67,10 @@ export const symptomsAnalysisService = async ({ user_id, gejala, durasi, suhu_tu
 
   return {
     patient_context,
-    analysis: analysis.response_text,
+    analysis: {
+      ...analysis,
+      disclaimer: DISCLAIMER,
+    },
     disclaimer: DISCLAIMER,
   };
 };
@@ -91,17 +99,28 @@ export const analyzeHealthDataService = async ({
   };
 
   const analysis = await callMaiaJson({
-    task: "Analisis Data Kesehatan (FOKUS HANYA PADA RESIKO PENYAKIT SAJA)",
+    task: "Analisis Data Kesehatan",
     schema_hint: {
-      response_text: "string (Format satu paragraf sederhana saja, tanpa markdown, tanpa list. Berikan analisis resiko penyakit berdasarkan data yang ada.)"
+      bmi: { value: "number", status: "string" },
+      tekanan_darah: { value: "string|null", status: "string" },
+      gula_darah: { value: "number|null", status: "string" },
+      kolesterol: { value: "number|null", status: "string" },
+      overall_status: "string",
+      recommendations: ["string"],
+      recommended_specialist: { spesialisasi: "string", alasan: "string" },
+      health_insight: { title: "string", description: "string" },
+      disclaimer: "string",
     },
     user_payload: aiInput,
     disclaimer: DISCLAIMER,
   });
 
+  // pastikan BMI sesuai hasil kalkulasi backend
+  analysis.bmi = { value: bmiCalc.bmi, status: bmiCalc.status };
+  analysis.disclaimer = DISCLAIMER;
+
   return {
-    bmi: { value: bmiCalc.bmi, status: bmiCalc.status },
-    analysis: analysis.response_text,
+    analysis,
     disclaimer: DISCLAIMER,
   };
 };
@@ -112,10 +131,11 @@ export const recommendDoctorBySymptomsService = async ({ user_id, gejala, durasi
   const aiInput = { input: { gejala, durasi } };
 
   const ai = await callMaiaJson({
-    task: "Rekomendasi Dokter by Gejala (Fokus ke Penyakit)",
+    task: "Rekomendasi Dokter by Gejala",
     schema_hint: {
-      response_text: "string (Format satu paragraf sederhana saja, tanpa markdown, tanpa list tentang kemungkinan penyakit dan alasan rekomendasi)",
-      recommended_specialist: { spesialisasi: "string", alasan: "string" }
+      kemungkinan_kondisi: ["string"],
+      recommended_specialist: { spesialisasi: "string", alasan: "string" },
+      disclaimer: "string",
     },
     user_payload: aiInput,
     disclaimer: DISCLAIMER,
@@ -127,7 +147,7 @@ export const recommendDoctorBySymptomsService = async ({ user_id, gejala, durasi
     : await listDoctorsService({ limit: 20, offset: 0 });
 
   return {
-    analysis: ai.response_text,
+    kemungkinan_kondisi: Array.isArray(ai.kemungkinan_kondisi) ? ai.kemungkinan_kondisi : [],
     recommended_specialist: ai.recommended_specialist || { spesialisasi: specialist || "Dokter Umum", alasan: "" },
     available_doctors: doctors,
     disclaimer: DISCLAIMER,

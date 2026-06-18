@@ -1,8 +1,6 @@
 import { 
     createImmunization, 
     getImmunizations, 
-    getImmunizationsByDoctor,
-    getImmunizationsByPasien,
     getImmunizationById, 
     updateImmunization,
     deleteImmunization 
@@ -28,38 +26,6 @@ export async function createImmunizationController(req, reply) {
 export async function getImmunizationsController(req, reply) {
     try {
         const immunizations = await getImmunizations()
-        return reply.code(200).send({
-            success: true,
-            message: "Imunisasi berhasil diambil",
-            data: immunizations,
-        })
-    } catch (error) {
-        return reply.code(500).send({
-            success: false,
-            message: error.message,
-        })
-    }
-}
-
-export async function getImmunizationsByDoctorController(req, reply) {
-    try {
-        const immunizations = await getImmunizationsByDoctor(req.params.doctor_id)
-        return reply.code(200).send({
-            success: true,
-            message: "Imunisasi berhasil diambil",
-            data: immunizations,
-        })
-    } catch (error) {
-        return reply.code(500).send({
-            success: false,
-            message: error.message,
-        })
-    }
-}
-
-export async function getImmunizationsByPasienController(req, reply) {
-    try {
-        const immunizations = await getImmunizationsByPasien(req.params.pasien_id)
         return reply.code(200).send({
             success: true,
             message: "Imunisasi berhasil diambil",
