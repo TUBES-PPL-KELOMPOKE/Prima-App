@@ -221,6 +221,39 @@ export async function initDatabase() {
   } catch (err) {
     console.warn("[initDatabase] Gagal drop constraint medical_records_type_check:", err.message);
   }
+
+  // Migration: pastikan doctor_id dan booking_id di medical_records nullable
+  // (pasien upload dokumen sendiri tidak punya doctor_id)
+  try {
+    await sql.unsafe(`
+      DO $$
+      BEGIN
+        IF EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_schema = 'public'
+            AND table_name = 'medical_records'
+            AND column_name = 'doctor_id'
+            AND is_nullable = 'NO'
+        ) THEN
+          ALTER TABLE public.medical_records ALTER COLUMN doctor_id DROP NOT NULL;
+        END IF;
+
+        IF EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_schema = 'public'
+            AND table_name = 'medical_records'
+            AND column_name = 'booking_id'
+            AND is_nullable = 'NO'
+        ) THEN
+          ALTER TABLE public.medical_records ALTER COLUMN booking_id DROP NOT NULL;
+        END IF;
+      END $$;
+    `);
+    console.log("[initDatabase] medical_records nullable migration OK.");
+  } catch (err) {
+    console.warn("[initDatabase] Gagal patch nullable medical_records:", err.message);
+  }
+
   // Health Documents
   await sql`
     CREATE TABLE IF NOT EXISTS public.health_documents (
@@ -240,3 +273,4 @@ export async function initDatabase() {
     );
   `;
 }
+

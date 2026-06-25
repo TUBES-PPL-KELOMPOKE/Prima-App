@@ -1,0 +1,17 @@
+{
+  "name": "prima-app",
+  "version": "1.0.0",
+  "description": "Prima App Monorepo",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:admin\" \"npm run dev:doctor\" \"npm run dev:pasien\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:admin": "cd frontend-admin && npm run dev",
+    "dev:doctor": "cd frontend-doctor && npm run dev",
+    "dev:pasien": "cd frontend-pasien && npm run dev",
+    "install:all": "cd backend && npm install && cd ../frontend-admin && npm install && cd ../frontend-doctor && npm install && cd ../frontend-pasien && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

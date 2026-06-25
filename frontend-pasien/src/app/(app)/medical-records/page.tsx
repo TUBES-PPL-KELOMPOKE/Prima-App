@@ -35,27 +35,34 @@ export default function MedicalRecordsPage() {
     try {
       const formData = new FormData()
       formData.append('file', uploadFile)
-      
-      const res = await api.post('/upload/pdf', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      }).then(r => r.data)
+      formData.append('judul', judul)
+      formData.append('pasien_id', String(user?.id ?? ''))
+      formData.append('type', 'pemeriksaan')
 
-      if (res.url || res.success) { // dummy returns { success: true, data: { id: ... } }
-        await api.post('/medical', {
-          pasien_id: user?.id,
-          judul: judul,
-          type: 'pemeriksaan',
-          attachment_url: res.url || '#'
-        })
-        toast.success('Dokumen berhasil diupload!')
-        setUploadFile(null)
-        setJudul('')
-        window.location.reload()
-      } else {
-        throw new Error('Gagal upload ke server')
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-prima.vercel.app'
+
+      const res = await fetch(`${baseUrl}/medical/upload`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      })
+
+      const json = await res.json()
+      console.log('[upload response]', res.status, json)
+
+      if (!res.ok) {
+        throw new Error(json?.message || `Server error ${res.status}`)
       }
-    } catch (e) {
-      toast.error('Terjadi kesalahan saat upload')
+
+      toast.success('Dokumen berhasil diupload!')
+      setUploadFile(null)
+      setJudul('')
+      window.location.reload()
+
+    } catch (e: any) {
+      console.error('❌ Upload Error:', e?.message || e)
+      toast.error(e?.message || 'Terjadi kesalahan saat upload')
     } finally {
       setIsUploading(false)
     }

@@ -19,7 +19,7 @@ export default async function uploadRoutes(fastify) {
       const uploadResult = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           {
-            resource_type: "raw",
+            resource_type: "auto",
             folder: "documents",
             public_id: data.filename,
           },
